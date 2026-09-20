@@ -1,0 +1,67 @@
+# FlowKeeper configuration
+
+sampling:
+  interval_seconds: 3         # how often the focus state is evaluated
+  feature_window_seconds: 30  # rolling window used to build features
+
+model:
+  onnx_path: models/focus.onnx
+  # Preferred execution providers, in order. QNN = Hexagon NPU on Snapdragon.
+  providers:
+    - QNNExecutionProvider
+    - CPUExecutionProvider
+  qnn_backend: QnnHtp.dll     # HTP = Hexagon Tensor Processor
+  # If the model or an EP is unavailable, fall back to the built-in heuristic.
+  allow_heuristic_fallback: true
+
+gate:
+  # Minimum consecutive seconds in DEEP_FOCUS before we start holding.
+  focus_debounce_seconds: 20
+  # In LIGHT_WORK, release low-priority notifications at most this often.
+  light_work_release_interval_seconds: 120
+  # On return from AWAY, collapse everything held into one summary card.
+  summarise_on_return: true
+
+priority:
+  # These always pass through, regardless of focus state.
+  always_allow_apps:
+    - Phone
+    - Calendar
+  urgent_keywords:
+    - urgent
+    - asap
+    - "p0"
+    - outage
+    - "911"
+  # Senders whose messages are never held.
+  vip_senders: []
+
+app_categories:
+  # Used to interpret the active window. Extend freely.
+  productive:
+    - code
+    - devenv
+    - idea64
+    - pycharm
+    - windowsterminal
+    - wt
+    - vim
+    - excel
+    - winword
+    - powerpnt
+  communication:
+    - slack
+    - teams
+    - outlook
+    - discord
+    - whatsapp
+  browsing:
+    - chrome
+    - msedge
+    - firefox
+
+privacy:
+  # FlowKeeper never persists raw input. This only controls whether an
+  # anonymised state timeline (state + timestamp) is kept for the session UI.
+  keep_state_timeline: true
+  persist_across_restart: false
